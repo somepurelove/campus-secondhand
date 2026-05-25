@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园二手交易平台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Toast 通知容器 -->
+    <div id="toast-container"></div>
+
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="logo">🏫 校园二手交易平台</div>
+            <div class="nav-links">
+                <a href="#banner" class="nav-link active" data-section="banner">首页</a>
+                <a href="#products" class="nav-link" data-section="products">商品列表</a>
+                <a href="#publish" class="nav-link" data-section="publish">发布商品</a>
+                <a href="#orders" class="nav-link" data-section="orders">我的订单</a>
+                <a href="#profile" class="nav-link" data-section="profile">个人中心</a>
+                <div class="nav-user-area">
+                    <span id="nav-username" class="nav-username" style="display:none;"></span>
+                    <button id="login-btn" class="btn btn-nav">登录/注册</button>
+                    <button id="logout-btn" class="btn btn-nav btn-logout" style="display:none;">退出</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 登录/注册模态框 -->
+        <div id="login-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>👤 用户登录</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" id="username" placeholder="请输入用户名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" placeholder="请输入密码" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">登 录</button>
+                    <p class="switch-form">还没有账号？<a href="#" id="switch-to-register">立即注册</a></p>
+                </form>
+            </div>
+        </div>
+
+        <div id="register-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>📝 用户注册</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-username">用户名</label>
+                        <input type="text" id="reg-username" placeholder="请输入用户名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">密码</label>
+                        <input type="password" id="reg-password" placeholder="至少6位密码" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">手机号</label>
+                        <input type="tel" id="reg-phone" placeholder="请输入手机号" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-role">角色</label>
+                        <select id="reg-role">
+                            <option value="buyer">买家</option>
+                            <option value="seller">卖家</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">注 册</button>
+                    <p class="switch-form">已有账号？<a href="#" id="switch-to-login">立即登录</a></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- 商品详情弹窗 -->
+        <div id="detail-modal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="close">&times;</span>
+                <div id="detail-body" class="detail-body">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 购买确认弹窗 -->
+        <div id="purchase-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>🛒 确认购买</h2>
+                <div id="purchase-body">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 评价弹窗 -->
+        <div id="review-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>⭐ 评价订单</h2>
+                <form id="review-form">
+                    <input type="hidden" id="review-order-id">
+                    <input type="hidden" id="review-seller-id">
+                    <div class="form-group">
+                        <label>评分</label>
+                        <div class="star-rating" id="star-rating">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <input type="hidden" id="review-rating" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="review-content">评价内容</label>
+                        <textarea id="review-content" rows="3" placeholder="请输入评价内容..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">提交评价</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 首页轮播 -->
+        <div id="banner" class="banner">
+            <div class="banner-content">
+                <h1>校园二手交易平台</h1>
+                <p>让闲置物品找到新主人，绿色校园从我做起</p>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="搜索你想要的商品...">
+                    <button id="search-btn" class="btn btn-primary">🔍 搜索</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品分类 -->
+        <div class="categories">
+            <h2>📂 商品分类</h2>
+            <div class="category-list">
+                <div class="category-item active" data-category-id="0">全部商品</div>
+                <div class="category-item" data-category-id="1">📱 数码产品</div>
+                <div class="category-item" data-category-id="2">👕 服装鞋包</div>
+                <div class="category-item" data-category-id="3">📚 书籍资料</div>
+                <div class="category-item" data-category-id="4">⚽ 运动户外</div>
+                <div class="category-item" data-category-id="5">🏠 生活用品</div>
+                <div class="category-item" data-category-id="6">📦 其他</div>
+            </div>
+        </div>
+
+        <!-- 商品列表 -->
+        <div id="products" class="products">
+            <div class="section-header">
+                <h2>🔥 热门商品</h2>
+                <span id="product-count" class="product-count"></span>
+            </div>
+            <div class="product-list" id="product-list">
+                <div class="loading-spinner" id="product-loading">
+                    <div class="spinner"></div>
+                    <p>加载中...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 发布商品 -->
+        <div id="publish" class="publish">
+            <h2>📤 发布商品</h2>
+            <div id="publish-login-hint" class="login-hint" style="display:none;">
+                <p>请先 <a href="#" id="publish-login-link">登录</a> 后再发布商品</p>
+            </div>
+            <form id="publish-form">
+                <div class="form-group">
+                    <label for="product-name">商品名称</label>
+                    <input type="text" id="product-name" placeholder="请输入商品名称" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-category">分类</label>
+                    <select id="product-category">
+                        <option value="1">📱 数码产品</option>
+                        <option value="2">👕 服装鞋包</option>
+                        <option value="3">📚 书籍资料</option>
+                        <option value="4">⚽ 运动户外</option>
+                        <option value="5">🏠 生活用品</option>
+                        <option value="6">📦 其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">价格（元）</label>
+                    <input type="number" id="product-price" step="0.01" min="0.01" placeholder="请输入价格" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">库存数量</label>
+                    <input type="number" id="product-stock" min="1" placeholder="请输入库存" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-description">商品描述</label>
+                    <textarea id="product-description" rows="4" placeholder="请详细描述商品的新旧程度、功能状况等..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">🚀 发布商品</button>
+            </form>
+        </div>
+
+        <!-- 我的订单 -->
+        <div id="orders" class="orders">
+            <h2>📋 我的订单</h2>
+            <div id="orders-login-hint" class="login-hint" style="display:none;">
+                <p>请先 <a href="#" id="orders-login-link">登录</a> 后查看订单</p>
+            </div>
+            <div class="order-list" id="order-list">
+                <!-- 订单将通过JavaScript动态添加 -->
+            </div>
+        </div>
+
+        <!-- 个人中心 -->
+        <div id="profile" class="profile">
+            <h2>👤 个人中心</h2>
+            <div id="profile-login-hint" class="login-hint" style="display:none;">
+                <p>请先 <a href="#" id="profile-login-link">登录</a> 后查看个人信息</p>
+            </div>
+            <div class="profile-info" id="profile-info">
+                <!-- 个人信息将通过JavaScript动态添加 -->
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>© 2026 校园二手交易平台 | 吉首大学 23计科2</p>
+        </footer>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
