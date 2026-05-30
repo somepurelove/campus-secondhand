@@ -112,10 +112,10 @@ public class OrderServiceTest {
         assertTrue(orderService.canTransitionStatus("pending", "cancelled"));
         assertTrue(orderService.canTransitionStatus("paid", "shipped"));
         assertTrue(orderService.canTransitionStatus("paid", "cancelled"));
+        assertTrue(orderService.canTransitionStatus("paid", "disputed")); // 付款后可发起纠纷
         assertTrue(orderService.canTransitionStatus("shipped", "completed"));
         assertTrue(orderService.canTransitionStatus("completed", "disputed"));
-        assertTrue(orderService.canTransitionStatus("disputed", "completed"));
-        assertTrue(orderService.canTransitionStatus("disputed", "rejected"));
+        assertTrue(orderService.canTransitionStatus("disputed", "completed")); // 纠纷处理后回到已完成
     }
     
     @Test
@@ -173,10 +173,17 @@ public class OrderServiceTest {
     
     @Test
     void testUpdatePaymentStatus() {
+        Order order = new Order();
+        order.setOrderId(1);
+        order.setOrderStatus("pending");
+
+        doReturn(order).when(orderService).getById(1);
         doReturn(true).when(orderService).updateById(any(Order.class));
-        
+
         boolean result = orderService.updatePaymentStatus(1, "paid");
-        
+
         assertTrue(result);
+        assertEquals("paid", order.getOrderStatus()); // 验证订单状态同步更新
+        assertEquals("paid", order.getPaymentStatus());
     }
 }

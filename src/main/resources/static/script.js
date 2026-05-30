@@ -770,7 +770,7 @@ async function loadMyOrders() {
                     <div class="order-header">
                         <div>
                             <span class="order-id">${roleLabel} 订单号: ${order.orderId}</span>
-                            <span class="order-time">${order.createTime || ''}</span>
+                            <span class="order-time">${order.createdAt || ''}</span>
                         </div>
                         <span class="order-status ${status.class}">${status.text}</span>
                     </div>
@@ -900,7 +900,7 @@ async function handleReview(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 orderId, reviewerId: user.userId, reviewedId: sellerId,
-                rating, content
+                rating, comment: content
             })
         });
         const data = await res.json();

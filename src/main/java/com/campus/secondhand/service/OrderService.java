@@ -34,10 +34,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> implements IOr
     static {
         // 定义状态转换规则：当前状态 -> 允许转换的目标状态数组
         STATE_TRANSITIONS.put("pending", new String[]{"paid", "cancelled"});
-        STATE_TRANSITIONS.put("paid", new String[]{"shipped", "cancelled"});
+        STATE_TRANSITIONS.put("paid", new String[]{"shipped", "cancelled", "disputed"}); // 付款后也可发起纠纷
         STATE_TRANSITIONS.put("shipped", new String[]{"completed"});
         STATE_TRANSITIONS.put("completed", new String[]{"disputed"});
-        STATE_TRANSITIONS.put("disputed", new String[]{"completed", "rejected"});
+        STATE_TRANSITIONS.put("disputed", new String[]{"completed"}); // 纠纷处理完成后回到已完成
     }
 
     /**
@@ -103,8 +103,14 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> implements IOr
      */
     @Override
     public boolean updatePaymentStatus(Integer orderId, String paymentStatus) {
-        Order order = new Order();
-        order.setOrderId(orderId);
+        Order order = getById(orderId);
+        if (order == null) {
+            return false;
+        }
+        // 付款时同步更新订单状态
+        if ("paid".equals(paymentStatus) && "pending".equals(order.getOrderStatus())) {
+            order.setOrderStatus("paid");
+        }
         order.setPaymentStatus(paymentStatus);
         return updateById(order);
     }

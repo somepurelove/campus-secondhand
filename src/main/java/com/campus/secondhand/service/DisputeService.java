@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.campus.secondhand.entity.Dispute;
 import com.campus.secondhand.entity.Order;
+import com.campus.secondhand.event.DisputeEvent;
 import com.campus.secondhand.mapper.DisputeMapper;
 import com.campus.secondhand.mapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +20,16 @@ import java.util.List;
  * 1. 单例模式：Spring的@Service注解确保该类为单例
  * 2. 模板方法模式：继承ServiceImpl，复用基础CRUD模板
  * 3. 依赖倒置：实现IDisputeService接口，供Controller依赖
+ * 4. 观察者模式：通过ApplicationEventPublisher发布纠纷事件
  */
 @Service
 public class DisputeService extends ServiceImpl<DisputeMapper, Dispute> implements IDisputeService {
     
     @Autowired
     private OrderMapper orderMapper;
+    
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     /**
      * 提交纠纷
@@ -71,6 +77,8 @@ public class DisputeService extends ServiceImpl<DisputeMapper, Dispute> implemen
                     }
                     orderMapper.updateById(order);
                 }
+                // 观察者模式：发布纠纷处理事件，通知信用分更新
+                eventPublisher.publishEvent(new DisputeEvent(this, dispute, status.toUpperCase()));
             }
             return result;
         }

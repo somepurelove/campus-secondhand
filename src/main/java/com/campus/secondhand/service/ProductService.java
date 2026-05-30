@@ -78,9 +78,11 @@ public class ProductService extends ServiceImpl<ProductMapper, Product> implemen
     @Override
     public List<Product> searchProducts(String keyword) {
         return baseMapper.selectList(new LambdaQueryWrapper<Product>()
-                .like(Product::getProductName, keyword)
-                .or()
-                .like(Product::getDescription, keyword)
+                .and(wrapper -> wrapper
+                    .like(Product::getProductName, keyword)
+                    .or()
+                    .like(Product::getDescription, keyword)
+                )
                 .eq(Product::getStatus, "approved"));
     }
 
